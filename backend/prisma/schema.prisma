@@ -1,0 +1,225 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+// generator client {
+//   provider = "prisma-client-js"
+//   output   = "../generated/prisma"
+// }
+
+// datasource db {
+//   provider = "postgresql"
+// }
+
+datasource db {
+  provider = "postgresql"
+  // url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  // output   = "../src/generated/prisma"
+}
+
+// ============= User Schema =============
+enum Role {
+  SUPER_ADMIN
+  SALES_ADMIN
+  SUPPORT_ADMIN
+  TRAINER
+  DIETICIAN 
+  USER
+}
+model User {
+  id      Int    @id @default(autoincrement())
+  name    String
+  phNo    String? @unique
+  email   String? @unique
+  password String? 
+  age     String? 
+  role    Role   @default(USER) 
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt 
+}
+
+// ============= Subscription Schema =============
+model Subscription {
+  id                Int      @id @default(autoincrement())
+  name              String
+  durationInDays    Int
+  price             Decimal
+  sessions          Int?
+  dieticianSupport  Boolean
+  liveClasses       Boolean  
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+}
+
+model UserSubscription {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  subscriptionId Int
+  startDate   DateTime @default(now())
+  endDate     DateTime
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============= Plan Schema =============
+enum Status {
+  SCHEDULED
+  COMPLETED
+  MISSED
+  RESCHEDULED
+}
+model OnBoardingCall {
+  id        Int      @id @default(autoincrement())
+  userId    Int?
+  userName  String
+  userPhNo String
+  date      DateTime
+  status    Status
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============= Dietician Schema =============
+// model Dietician {
+//   id          Int      @id @default(autoincrement())
+//   name        String
+//   specialization String?
+//   experienceYears Int?
+//   isActive    Boolean  @default(true)
+// }
+
+model DieticianAssignment {
+  id          Int      @id @default(autoincrement())
+  subscriptionId Int?
+  dieticianId Int
+  userId      Int
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============= Diet Plan =============
+// model DietPlan {
+//   id          Int      @id @default(autoincrement())
+//   subscriptionId Int
+//   userId      Int
+//   createdAt   DateTime @default(now())
+//   updatedAt   DateTime @updatedAt
+// }
+model DietPlan {
+  id             Int      @id @default(autoincrement())
+  subscriptionId Int?
+  assignedTo     Int
+  assignedBy     Int
+  title          String
+  description    String?
+  startDate      DateTime?
+  endDate        DateTime?
+  caloriesPerDay Int?
+  proteinPerDay  Int?
+  carbsPerDay    Int?
+  fatPerDay      Int?
+  meals          Json?
+  notes          String?
+  isActive       Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+// ============ Messages =============
+model Message {
+  id          Int      @id @default(autoincrement())
+  subscriptionId Int?
+  userId      Int
+  dieticianId Int
+  message     String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============ Sessions =============
+enum SessionType {
+  LIVE
+  RECORDED
+}
+model Session {
+  id          Int      @id @default(autoincrement())
+  subscriptionId Int
+  userId      Int
+  trainer_name String
+  date        DateTime
+  duration    Int
+  session_type SessionType
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============ Tickets =============
+enum TICKET_STATUS {
+  OPEN
+  IN_PROGRESS
+  CLOSED
+  RESOLVED
+}
+model Ticket {
+  id          Int      @id @default(autoincrement())
+  subscriptionId Int?
+  userId      Int
+  message     String
+  status      TICKET_STATUS @default(OPEN)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ============ Orders =============
+enum ORDER_STATUS {
+  PENDING
+  COMPLETED
+  FAILED
+  CANCELLED
+}
+model Order {
+  id             Int          @id @default(autoincrement())
+  subscriptionId Int
+  userId         Int
+  amount         Decimal
+  status         ORDER_STATUS
+  razorpayOrderId String      @unique
+  paymentId      String?      @unique
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+// =========== Meetings =============
+model Meeting {
+  id             Int      @id @default(autoincrement())
+  subscriptionId Int
+  createdBy      Int
+  zoomMeetingId  String
+  topic          String
+  startTime      DateTime
+  duration       Int
+  joinUrl        String
+  startUrl       String
+  status         String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model Lead {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String?
+  phone       String
+  source      String?
+  status      String  @default("New")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}

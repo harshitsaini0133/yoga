@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Test Payment</title>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  </head>
+  <body>
+    <button id="pay">Pay Now</button>
+
+    <script>
+      document.getElementById("pay").onclick = function () {
+        var options = {
+          key: "rzp_test_SJ9a7QRv3qxIWh", // Razorpay Test Key
+          amount: 100000, // paise
+          currency: "INR",
+          name: "Yoga App",
+          order_id: "order_SKvuyfwVyyIwI9", // your order id
+          handler: function (response) {
+            console.log("Payment Success:", response);
+            alert("Payment Done");
+          },
+        };
+
+        var rzp = new Razorpay(options);
+        rzp.open();
+      };
+    </script>
+  </body>
+</html>
