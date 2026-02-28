@@ -1,7 +1,7 @@
 import axios from "axios";
 
 export const axiosInstance = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: "https://yoga-xnra.onrender.com",
   headers: {
     "Content-Type": "application/json",
   },

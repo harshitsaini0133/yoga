@@ -1,5 +1,5 @@
 import { errorResponse } from "../utils/response.js";
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/library";
+import { Prisma } from "@prisma/client";
 
 export class AppError extends Error {
   constructor(message, statusCode = 500, errors = null) {
@@ -39,7 +39,7 @@ export const errorHandler = (err, req, res, next) => {
   error.message = err.message;
 
   // Prisma Errors
-  if (err instanceof PrismaClientKnownRequestError) {
+  if (err instanceof Prisma.PrismaClientKnownRequestError) {
     error = handlePrismaError(err);
   }
 
