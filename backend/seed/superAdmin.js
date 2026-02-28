@@ -21,12 +21,12 @@ async function main() {
     throw new Error("DATABASE_URL is not loaded. Check .env file.");
   }
 
-  const hash = await hashPassword("admin123", 10);
+  const hash = await hashPassword("admin123");
 
   await prisma.user.create({
     data: {
       name: "Super Admin",
-      email: "admin@example.com",
+      email: "admin@gmail.com",
       password: hash,
       role: "SUPER_ADMIN",
     },

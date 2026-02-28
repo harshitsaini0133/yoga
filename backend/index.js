@@ -14,9 +14,13 @@ var instance = new Razorpay({
 
 const app = express();
 
+const allowedOrigins = [
+  "http://localhost:5173", // Your local Vite frontend
+  // "https://your-deployed-frontend-url.vercel.app" // Uncomment and add this later when you deploy the frontend
+];
 app.use(
   cors({
-    origin: "*",
+    origin: allowedOrigins,
     credentials: true,
   }),
 );
