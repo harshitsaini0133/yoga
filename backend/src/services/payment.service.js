@@ -27,37 +27,76 @@
 //   }
 // };
 
-import crypto from "crypto";
+// import crypto from "crypto";
+// import { razorpay } from "../utils/razorpay.js";
+// import prisma from "../lib/prisma.js";
+
+// // ================= CREATE ORDER =================
+// export const createRazorpayOrder = async ({ userId, subscriptionId }) => {
+//   const subscription = await prisma.subscription.findUnique({
+//     where: { id: subscriptionId },
+//   });
+
+//   if (!subscription) throw new Error("Subscription not found");
+//   const amount = subscription.price;
+//   // Create order in Razorpay
+//   const razorpayOrder = await razorpay.orders.create({
+//     amount: amount * 100, // convert to paise
+//     currency: "INR",
+//     receipt: `receipt_${Date.now()}`,
+//   });
+
+//   // Save order in DB
+//   const order = await prisma.order.create({
+//     data: {
+//       userId,
+//       subscriptionId,
+//       amount,
+//       razorpayOrderId: razorpayOrder.id,
+//       status: "PENDING",
+//     },
+//   });
+
+//   return { razorpayOrder, order };
+// };
+
 import { razorpay } from "../utils/razorpay.js";
 import prisma from "../lib/prisma.js";
 
-// ================= CREATE ORDER =================
 export const createRazorpayOrder = async ({ userId, subscriptionId }) => {
-  const subscription = await prisma.subscription.findUnique({
-    where: { id: subscriptionId },
-  });
+  try {
+    const subscription = await prisma.subscription.findUnique({
+      where: { id: subscriptionId },
+    });
 
-  if (!subscription) throw new Error("Subscription not found");
-  const amount = subscription.price;
-  // Create order in Razorpay
-  const razorpayOrder = await razorpay.orders.create({
-    amount: amount * 100, // convert to paise
-    currency: "INR",
-    receipt: `receipt_${Date.now()}`,
-  });
+    if (!subscription) throw new Error("Subscription not found");
 
-  // Save order in DB
-  const order = await prisma.order.create({
-    data: {
-      userId,
-      subscriptionId,
-      amount,
-      razorpayOrderId: razorpayOrder.id,
-      status: "PENDING",
-    },
-  });
+    const amount = subscription.price.toNumber(); // ✅ convert Decimal
+    const amountInPaise = Math.round(amount * 100);
 
-  return { razorpayOrder, order };
+    // Create order in Razorpay
+    const razorpayOrder = await razorpay.orders.create({
+      amount: amountInPaise,
+      currency: "INR",
+      receipt: `receipt_${Date.now()}`,
+    });
+
+    // Save order in DB
+    const order = await prisma.order.create({
+      data: {
+        userId,
+        subscriptionId,
+        amount,
+        razorpayOrderId: razorpayOrder.id,
+        status: "PENDING",
+      },
+    });
+
+    return { razorpayOrder, order };
+  } catch (error) {
+    console.error("Error in createRazorpayOrder:", error);
+    throw new Error(error.message || "Failed to create Razorpay order");
+  }
 };
 
 // ================= VERIFY PAYMENT =================
