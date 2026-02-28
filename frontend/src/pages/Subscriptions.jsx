@@ -23,8 +23,9 @@ const Subscriptions = () => {
   // Fetch subscriptions from backend
   const fetchSubscriptions = async () => {
     try {
-      const data = await getSubscriptions();
-      setSubscriptions(data);
+      const res = await getSubscriptions();
+      // console.log("data is", data);
+      setSubscriptions(res.data);
     } catch (err) {
       console.error("Failed to fetch subscriptions:", err);
     } finally {

@@ -49,14 +49,25 @@ model User {
 }
 
 // ============= Subscription Schema =============
+enum Duration {
+  MONTHLY
+  YEARLY
+  QUARTERLY
+}
+enum Tab {
+  BEST_VALUE
+  MOST_POPULAR
+  BEST_SAVINGS
+}
 model Subscription {
   id                Int      @id @default(autoincrement())
   name              String
-  durationInDays    Int
+  duration          Duration
   price             Decimal
+  discount          Decimal
   sessions          Int?
-  dieticianSupport  Boolean
-  liveClasses       Boolean  
+  features          String[]
+  tab               Tab?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }
