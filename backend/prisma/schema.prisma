@@ -44,6 +44,11 @@ model User {
   otpSentAt   DateTime?
   otpExpiry   DateTime?
 
+  // 🔥 Profile Fields
+  height      String?
+  weight      String?
+  gender      String?
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt 
 }
