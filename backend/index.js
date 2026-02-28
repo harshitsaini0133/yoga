@@ -16,7 +16,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    origin: "*",
     credentials: true,
   }),
 );
@@ -32,7 +32,8 @@ app.use("/api", router);
 // Global Error Handler
 app.use(errorHandler);
 
-app.listen(3000, "0.0.0.0", () => {
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, "0.0.0.0", () => {
   console.log("listening on port 3000 at 0.0.0.0");
 });
 

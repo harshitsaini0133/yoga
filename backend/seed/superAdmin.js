@@ -1,42 +1,26 @@
-import dotenv from "dotenv";
-import path from "path";
-import { fileURLToPath } from "url";
+// import pkg from "@prisma/adapter-pg";
+// const { PrismaPgAdapter } = pkg;
+// // OR try the direct default import if the above fails:
+// // import { PrismaPgAdapter } from '@prisma/adapter-pg/dist/index.js';
+// import { PrismaClient } from "@prisma/client";
 
-// Fix __dirname for ES modules
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// // 1. Create the Pool with explicit SSL for Render
+// const connectionString = process.env.DATABASE_URL;
 
-// Load .env explicitly
-dotenv.config({
-  path: path.resolve(__dirname, "../.env"),
-});
+// const pool = new pg.Pool({
+//   connectionString: connectionString,
+//   ssl: {
+//     rejectUnauthorized: false, // Required for Render external connections
+//   },
+// });
 
-import prisma from "../src/lib/prisma.js";
-import { hashPassword } from "../src/utils/password.js";
+// // 2. Setup the Adapter
+// const adapter = new PrismaPgAdapter(pool);
+// const prisma = new PrismaClient({ adapter });
 
-async function main() {
-  console.log("DB URL:", process.env.DATABASE_URL); // Debug (temporary)
+// async function main() {
+//   // Your seeding logic here...
+//   console.log("Connection successful!");
+// }
 
-  if (!process.env.DATABASE_URL) {
-    throw new Error("DATABASE_URL is not loaded. Check .env file.");
-  }
-
-  const hash = await hashPassword("admin123", 10);
-
-  await prisma.user.create({
-    data: {
-      name: "Super Admin",
-      email: "admin@example.com",
-      password: hash,
-      role: "SUPER_ADMIN",
-    },
-  });
-
-  console.log("✅ Super Admin created");
-}
-
-main()
-  .catch(console.error)
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+// main();
