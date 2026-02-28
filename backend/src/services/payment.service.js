@@ -1,65 +1,4 @@
-// import Razorpay from "razorpay";
-
-// export const createOrder = async (data) => {
-//   try {
-//     const order = Razorpay.orders.create(data);
-//     return order;
-//   } catch (error) {
-//     throw new Error(error);
-//   }
-// };
-
-// export const verifyPayment = async (data) => {
-//   try {
-//     const payment = await Razorpay.payments.fetch(data);
-//     return payment;
-//   } catch (error) {
-//     throw new Error(error);
-//   }
-// };
-
-// export const capturePayment = async (data) => {
-//   try {
-//     const payment = await Razorpay.payments.capture(data);
-//     return payment;
-//   } catch (error) {
-//     throw new Error(error);
-//   }
-// };
-
-// import crypto from "crypto";
-// import { razorpay } from "../utils/razorpay.js";
-// import prisma from "../lib/prisma.js";
-
-// // ================= CREATE ORDER =================
-// export const createRazorpayOrder = async ({ userId, subscriptionId }) => {
-//   const subscription = await prisma.subscription.findUnique({
-//     where: { id: subscriptionId },
-//   });
-
-//   if (!subscription) throw new Error("Subscription not found");
-//   const amount = subscription.price;
-//   // Create order in Razorpay
-//   const razorpayOrder = await razorpay.orders.create({
-//     amount: amount * 100, // convert to paise
-//     currency: "INR",
-//     receipt: `receipt_${Date.now()}`,
-//   });
-
-//   // Save order in DB
-//   const order = await prisma.order.create({
-//     data: {
-//       userId,
-//       subscriptionId,
-//       amount,
-//       razorpayOrderId: razorpayOrder.id,
-//       status: "PENDING",
-//     },
-//   });
-
-//   return { razorpayOrder, order };
-// };
-
+import crypto from "crypto";
 import { razorpay } from "../utils/razorpay.js";
 import prisma from "../lib/prisma.js";
 
@@ -122,7 +61,7 @@ export const verifyRazorpayPayment = async ({
   }
 
   if (order.status === "COMPLETED") {
-    throw new Error("Payment already completed");
+    return { success: true, message: "Payment already processed" };
   }
 
   if (expectedSignature !== razorpay_signature) {
@@ -140,20 +79,31 @@ export const verifyRazorpayPayment = async ({
     data: { status: "COMPLETED", paymentId: razorpay_payment_id },
   });
 
+  const durationMap = {
+    MONTHLY: 30,
+    QUARTERLY: 90,
+    YEARLY: 365,
+  };
+
   const subscription = await prisma.subscription.findUnique({
     where: { id: order.subscriptionId },
   });
+
+  if (!subscription) throw new Error("Subscription type not found");
+
+  const daysToAdd = durationMap[subscription.duration] || 0;
+
+  const endDate =
+    daysToAdd > 0
+      ? new Date(Date.now() + daysToAdd * 24 * 60 * 60 * 1000)
+      : null;
 
   await prisma.userSubscription.create({
     data: {
       userId: order.userId,
       subscriptionId: order.subscriptionId,
       startDate: new Date(),
-      endDate: subscription.durationInDays
-        ? new Date(
-            Date.now() + subscription.durationInDays * 24 * 60 * 60 * 1000,
-          )
-        : null,
+      endDate: endDate,
     },
   });
 
