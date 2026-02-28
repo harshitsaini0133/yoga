@@ -65,7 +65,6 @@ model Subscription {
   duration          Duration
   price             Decimal
   discount          Decimal
-  sessions          Int?
   features          String[]
   tab               Tab?
   createdAt         DateTime @default(now())
