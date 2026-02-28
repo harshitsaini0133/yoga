@@ -9,8 +9,8 @@ const Users = () => {
     const fetchUsers = async () => {
       try {
         const res = await getAllUsers();
-        console.log("data is", res.data);
-        setUsers(res.data);
+        console.log("data is", res);
+        setUsers(res.data || []);
       } catch (err) {
         console.error("Failed to fetch users:", err);
       } finally {
