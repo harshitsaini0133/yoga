@@ -8,8 +8,9 @@ const Users = () => {
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        const data = await getAllUsers();
-        setUsers(data);
+        const res = await getAllUsers();
+        console.log("data is", res);
+        setUsers(res.data || []);
       } catch (err) {
         console.error("Failed to fetch users:", err);
       } finally {

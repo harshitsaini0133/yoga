@@ -4,8 +4,11 @@ import { successResponse } from "../utils/response.js";
 export const paymentController = {
   // ================= CREATE ORDER =================
   createOrder: async (req, res) => {
-    const { subscriptionId } = req.body;
+    let { subscriptionId } = req.body;
 
+    if (!subscriptionId) throw new Error("subscriptionId is required");
+
+    subscriptionId = Number(subscriptionId);
     const result = await paymentService.createRazorpayOrder({
       userId: req.user.id,
       subscriptionId,
