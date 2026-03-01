@@ -15,6 +15,7 @@
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 
@@ -49,14 +50,24 @@ model User {
 }
 
 // ============= Subscription Schema =============
+enum Duration {
+  MONTHLY
+  YEARLY
+  QUARTERLY
+}
+enum Tab {
+  BEST_VALUE
+  MOST_POPULAR
+  BEST_SAVINGS
+}
 model Subscription {
   id                Int      @id @default(autoincrement())
   name              String
-  durationInDays    Int
+  duration          Duration
   price             Decimal
-  sessions          Int?
-  dieticianSupport  Boolean
-  liveClasses       Boolean  
+  discount          Decimal
+  features          String[]
+  tab               Tab?
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 }

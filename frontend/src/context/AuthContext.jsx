@@ -10,7 +10,8 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const isLoggedIn = async () => {
       try {
-        await getMe();
+        const user = await getMe();
+        console.log("user", user);
         setIsAuthenticated(true);
       } catch (error) {
         console.error(error);
