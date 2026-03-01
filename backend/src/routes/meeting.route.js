@@ -8,6 +8,7 @@ router.get("/meetings", verifyAuth, meetingController.getAllMeetings);
 router.get("/my/meetings", verifyAuth, meetingController.getAllUserMeetings);
 router.get(
   "/subscriptions/:id/meetings",
+  verifyAuth,
   meetingController.getSubsciptionMeetings,
 );
 

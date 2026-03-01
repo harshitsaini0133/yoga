@@ -40,10 +40,22 @@ export const meetingController = {
     const meetings = await prisma.meeting.findMany({
       where: { subscriptionId: id },
     });
+    // Add instructor name explicitly using createdBy since Prisma model stringency doesn't join by default
+    const enhancedMeetings = await Promise.all(
+      meetings.map(async (m) => {
+        const creator = await prisma.user.findUnique({
+          where: { id: m.createdBy },
+        });
+        return {
+          ...m,
+          instructorName: creator?.name || "Instructor",
+        };
+      }),
+    );
     return successResponse(
       res,
       "Subscription meetings fetched successfully",
-      meetings,
+      enhancedMeetings,
     );
   },
 
